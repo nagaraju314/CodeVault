@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  req: Request,
-  context: { params: Promise<{ id: string }> }
+  _req: Request,
+  context: { params: Promise<{ id: string }> } // ← matches your typing in the doc
 ) {
-  const { id } = await context.params; // ✅ await params
+  const { id } = await context.params;
 
   try {
     const snippet = await prisma.snippet.findUnique({
@@ -23,7 +23,7 @@ export async function GET(
 
     return NextResponse.json({
       ...snippet,
-      author: snippet.author || null, // prevent Inconsistent query result error
+      author: snippet.author || null,
     });
   } catch (err) {
     console.error("Error fetching snippet:", err);

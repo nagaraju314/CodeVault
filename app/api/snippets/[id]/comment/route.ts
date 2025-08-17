@@ -5,24 +5,23 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  context: { params: Promise<{ id: string }> } // 👈 params is a Promise
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ✅ Await params before use
   const { id } = await context.params;
-
   const { content } = await req.json();
-  if (!content?.trim()) {
+
+  if (!String(content || "").trim()) {
     return NextResponse.json({ error: "Empty comment" }, { status: 400 });
   }
 
   await prisma.comment.create({
     data: {
-      content: content.trim(),
+      content: String(content).trim(),
       authorId: session.user.id,
       snippetId: id,
     },
